@@ -156,33 +156,6 @@
         font-weight: 700;
       }
 
-      #currentDogsContainer {
-        margin: 20px auto;
-        max-width: 95%;
-        background: white;
-        padding: 30px;
-        border-radius: 24px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-      }
-
-      #currentDogsContainer h3 {
-        color: #667eea;
-        font-size: 24px;
-        margin-bottom: 16px;
-        font-weight: 700;
-      }
-
-      #currentDogsList {
-        list-style-type: disc;
-        padding-right: 20px;
-        line-height: 1.8;
-        color: #333;
-      }
-
-      #currentDogsList li {
-        margin-bottom: 8px;
-      }
-
       .container-header-row {
         display: flex;
         justify-content: space-between;
@@ -839,11 +812,6 @@
         <h1>🐕 מערכת ניהול פנסיון כלבים</h1>
       </header>
 
-      <div id="currentDogsContainer">
-        <h3>כלבים שנמצאים כעת בפנסיון</h3>
-        <ul id="currentDogsList"></ul>
-      </div>
-
       <div id="monthlyCalendarContainer" class="container">
         <div class="container-header-row">
           <h3>לוח זמנים חודשי (נוכחות כלבים)</h3>
@@ -1192,18 +1160,25 @@
 
           sizes.forEach((size) => {
             const dogCount = dogsBySize[size].length;
-            // יוצרים רשימה עם קו מפריד כדי שתיראה יפה ב-Tooltip
-            const dogNames = dogsBySize[size]
-              .map((d) => d.dog_name || "ללא שם")
+
+            // --- הוספת שם הבעלים בסוגריים ---
+            const dogEntries = dogsBySize[size]
+              .map((d) => {
+                const dogName = d.dog_name || "ללא שם";
+                const ownerName = d.owner_name ? ` (${d.owner_name})` : "";
+                return dogName + ownerName;
+              })
               .join(" | ");
+            // ---------------------------------
 
             // בודק אם זה יום שבת (עמודה אחרונה, יום 6) כדי להפוך את כיוון ה-tooltip
-            const reverseClass = currentDayOfWeek === 6 ? " reverse-tooltip" : "";
+            const reverseClass =
+              currentDayOfWeek === 6 ? " reverse-tooltip" : "";
 
             dogsContentHTML += `
                     <div class="dog-size-label${reverseClass}" >
                         ${size} (${dogCount})
-                        <div class="dog-tooltip">${dogNames.replace(
+                        <div class="dog-tooltip">${dogEntries.replace(
                           / \| /g,
                           "<br>"
                         )}</div>
@@ -1217,12 +1192,7 @@
           }
 
           // Apply row striping classes to TD if we are using general TR styles
-          if (rowCounter % 2 === 1) { // Check if the row counter is odd (meaning the row started from an even/striped TR)
-            // This is a complex logic because the first week might not start on Sunday.
-            // However, the CSS rule is for `tbody tr:nth-child(even)`, which means the <tr> index determines the stripe.
-            // The best way to achieve consistency is by relying on the inherited TR styles. No need to add TD classes here.
-          }
-
+          // (No need to add TD classes here, relying on inherited TR styles)
 
           calendarHTML += `<td class="${classes}">
                 <div class="day-number">${dayCounter}</div>
@@ -1686,39 +1656,7 @@
           });
           renderPastOrdersTable();
 
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-
-          const currentDogs = data.filter((row) => {
-            if (row.status !== "מאושר") return false;
-
-            const checkIn = new Date(row.check_in);
-            const checkOut = new Date(row.check_out);
-
-            checkIn.setHours(0, 0, 0, 0);
-            checkOut.setHours(23, 59, 59, 999);
-
-            return checkIn <= today && checkOut >= today;
-          });
-
-          const dogsList = document.getElementById("currentDogsList");
-          dogsList.innerHTML = "";
-
-          if (currentDogs.length === 0) {
-            const li = document.createElement("li");
-            li.textContent = "אין כלבים בפנסיון כרגע";
-            li.style.color = "#999";
-            dogsList.appendChild(li);
-          } else {
-            currentDogs.forEach((row) => {
-              const li = document.createElement("li");
-              // שימוש ב-<strong> להדגשה
-              li.innerHTML = `<strong>${row.dog_name || "ללא שם"}</strong> (${
-                row.owner_name || "ללא בעלים"
-              })`;
-              dogsList.appendChild(li);
-            });
-          }
+          // **הקוד להצגת הכלבים הנוכחיים בפנסיון הוסר מכאן**
 
           document
             .querySelectorAll("textarea.admin-note")
