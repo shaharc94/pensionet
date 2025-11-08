@@ -165,9 +165,10 @@
         padding-bottom: 15px;
       }
 
-      /* --- CSS ללוח השנה החדש --- */
-      #monthlyCalendarContainer {
-        /* הוסרה ההגבלה של overflow-x: hidden; כדי לאפשר ל-tooltip לגלוש החוצה */
+      /* --- CSS ללוח השנה החדש ולכפתורים --- */
+      #calendarViewControls {
+        display: flex;
+        gap: 10px;
       }
 
       .calendar-toggle-btn {
@@ -180,7 +181,6 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s;
-        margin-right: 15px;
       }
 
       .calendar-toggle-btn:hover {
@@ -188,7 +188,9 @@
         color: white;
       }
 
-      #monthlyCalendarContainer.collapsed #calendarBody {
+      /* --- לוגיקת כיווץ לוח השנה (הסתרת גוף התצוגה של לוח השנה) --- */
+      #calendarViewContent.collapsed #calendarHeader,
+      #calendarViewContent.collapsed #monthlyCalendarGrid {
         display: none;
       }
 
@@ -197,32 +199,29 @@
       }
 
       .calendar-table {
-        width: 100%; /* הוחזר ל-100% לפי בקשה */
+        width: 100%;
         border-collapse: collapse;
         table-layout: fixed;
-        /* margin: 0 auto; הוסר */
       }
 
       .calendar-table th {
-        /* background: #764ba2; - הוסר כדי לרשת את הגרדיאנט הכללי */
         color: white;
         font-size: 16px;
-        padding: 15px 5px; /* שמירה על הריפוד של לוח השנה */
-        border: 1px solid #e0e0e0; /* הותאם לגבול הכללי */
+        padding: 15px 5px;
+        border: 1px solid #e0e0e0;
       }
 
       .calendar-table td {
-        height: 120px; /* גובה קבוע לתא יום */
+        height: 120px;
         border: 1px solid #e0e0e0;
         vertical-align: top;
         padding: 5px;
         position: relative;
-        /* background-color: #fcfcff; - הוסר כדי לאפשר לעיצוב השורות הכללי (פסים) לחול */
         transition: background-color 0.2s;
       }
 
       .calendar-table td:hover {
-        background-color: #f8f9ff; /* הותאם לצבע ה-hover של שורות הטבלה הכללי */
+        background-color: #f8f9ff;
       }
 
       .calendar-table td.today {
@@ -256,7 +255,6 @@
         font-weight: 600;
         text-align: center;
         position: relative;
-        /* מאפשר לתווית להתנהג כבלוק בתוך התא */
         display: block;
       }
 
@@ -265,12 +263,12 @@
         color: white;
       }
 
-      /* --- 1. ברירת מחדל: Tooltip יוצא לשמאל התווית (טוב לעמודות 1-6) --- */
+      /* Tooltip (ברירת מחדל לשמאל) */
       .dog-tooltip {
         display: none;
         position: absolute;
         top: -5px;
-        right: 100%; /* ה-Tooltip יוצא שמאלה מהתווית */
+        right: 100%;
         left: auto;
         transform: translateX(0);
         background: #333;
@@ -283,48 +281,96 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         line-height: 1.4;
         text-align: right;
-        margin-left: 10px; /* רווח קטן מהתווית */
+        margin-left: 10px;
         margin-right: 0;
       }
 
-      /* החץ של ברירת המחדל (פונה שמאלה) */
       .dog-tooltip::after {
         content: "";
         position: absolute;
         top: 10px;
-        right: -6px; /* החץ ממוקם בצד ימין של ה-tooltip */
+        right: -6px;
         border: 6px solid transparent;
-        border-left-color: #333; /* החץ פונה שמאלה אל התווית */
+        border-left-color: #333;
         left: auto;
       }
 
-      /* --- 2. היפוך: Tooltip יוצא לימין התווית (לשם הוספת המחלקה `reverse-tooltip` לעמודה השמאלית ביותר) --- */
+      /* היפוך Tooltip (לימין) */
       .dog-size-label.reverse-tooltip .dog-tooltip {
-        /* היפוך מיקום */
         right: auto;
         left: 100%;
-        /* היפוך שוליים */
         margin-right: 10px;
         margin-left: 0;
       }
 
-      /* החץ של ההיפוך (פונה ימינה) */
       .dog-size-label.reverse-tooltip .dog-tooltip::after {
-        /* היפוך מיקום החץ */
         right: auto;
-        left: -6px; /* החץ ממוקם בצד שמאל של ה-tooltip */
-
-        /* היפוך כיוון החץ */
-        border-left-color: transparent; /* ביטול החץ הקודם */
-        border-right-color: #333; /* החץ פונה ימינה אל התווית */
+        left: -6px;
+        border-left-color: transparent;
+        border-right-color: #333;
       }
 
-      /* מציג את ה-tooltip כאשר מרחפים על ה-label */
       .dog-size-label:hover .dog-tooltip {
         display: block;
       }
-
       /* --- סוף CSS ללוח השנה --- */
+
+      /* --- CSS לכלבים הנוכחיים (תצוגת עמודות) --- */
+      #currentDogsColumnView {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 10px 0;
+      }
+
+      .dog-column {
+        flex: 1 1 250px;
+        min-width: 250px;
+        background: #f8f9ff;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .dog-column h4 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 10px;
+        margin: -15px -15px 15px -15px;
+        border-radius: 12px 12px 0 0;
+        font-size: 18px;
+        text-align: center;
+        font-weight: 700;
+      }
+
+      .dog-entry {
+        background: white;
+        border: 1px solid #dcdcdc;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .dog-entry:last-child {
+        margin-bottom: 0;
+      }
+
+      .dog-entry strong {
+        color: #333;
+        display: block;
+        margin-bottom: 3px;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .dog-entry span {
+        color: #666;
+        display: block;
+      }
+      /* --- סוף CSS לכלבים הנוכחיים --- */
 
       table {
         border-collapse: collapse;
@@ -814,17 +860,26 @@
 
       <div id="monthlyCalendarContainer" class="container">
         <div class="container-header-row">
-          <h3>לוח זמנים חודשי (נוכחות כלבים)</h3>
-          <button
-            id="toggleCalendarBtn"
-            class="calendar-toggle-btn"
-            onclick="toggleCalendar(this)"
-          >
-            כווץ ⬆️
-          </button>
+          <h3 id="viewTitle">לוח זמנים חודשי (נוכחות כלבים)</h3>
+          <div id="calendarViewControls">
+            <button
+              id="toggleCalendarViewBtn"
+              class="calendar-toggle-btn"
+              onclick="toggleCalendarView(this)"
+            >
+              הצג כלבים נוכחיים 🐕
+            </button>
+            <button
+              id="toggleCalendarCollapseBtn"
+              class="calendar-toggle-btn"
+              onclick="toggleCalendarCollapse(this)"
+            >
+              כווץ ⬆️
+            </button>
+          </div>
         </div>
 
-        <div id="calendarBody">
+        <div id="calendarViewContent">
           <div
             id="calendarHeader"
             style="text-align: center; margin-bottom: 20px"
@@ -853,9 +908,11 @@
           </div>
           <div id="monthlyCalendarGrid"></div>
         </div>
+
+        <div id="currentDogsColumnView" style="display: none"></div>
       </div>
       <div class="container">
-        <h3>הזמנות</h3>
+        <h3>הזמנות עתידיות</h3>
         <table id="futureOrdersTable">
           <thead>
             <tr>
@@ -1000,6 +1057,7 @@
       // --- לוגיקת לוח שנה חדשה ---
       window.currentCalendarDate = new Date();
       window.allOrdersCache = []; // שמירת הנתונים המלאים
+      window.currentView = "calendar"; // 'calendar' או 'dogs'
 
       function calculateDays(checkIn, checkOut) {
         if (!checkIn || !checkOut) return 0;
@@ -1191,9 +1249,6 @@
             classes += " busy";
           }
 
-          // Apply row striping classes to TD if we are using general TR styles
-          // (No need to add TD classes here, relying on inherited TR styles)
-
           calendarHTML += `<td class="${classes}">
                 <div class="day-number">${dayCounter}</div>
                 <div class="day-content">${dogsContentHTML}</div>
@@ -1225,7 +1280,56 @@
         calendarGrid.innerHTML = calendarHTML;
       }
 
+      function renderCurrentDogsColumnView(allOrders) {
+        const dogsView = document.getElementById("currentDogsColumnView");
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const dogsBySize = getDogsForDay(allOrders, today);
+        const sizes = Object.keys(dogsBySize).sort();
+
+        let dogsHTML = "";
+
+        if (sizes.length === 0) {
+          dogsHTML =
+            '<div style="padding: 20px; text-align: center; color: #777;">אין כלבים בפנסיון היום.</div>';
+        } else {
+          sizes.forEach((size) => {
+            const dogs = dogsBySize[size];
+            let dogEntries = dogs
+              .map((d) => {
+                const checkOutDate = formatDateOnly(d.check_out);
+                const contactLink = createWhatsAppLink(d.phone);
+
+                return `
+                    <div class="dog-entry">
+                        <strong>${d.dog_name || "ללא שם"}</strong>
+                        <span>בעלים: ${d.owner_name || "לא ידוע"}</span>
+                        <span>יוצא ב: ${checkOutDate}</span>
+                        <span>טלפון: ${contactLink}</span>
+                        <span style="font-size: 12px; color: #a0a0a0; margin-top: 5px;">הערות מנהל: ${
+                          d.admin_note || "אין"
+                        }</span>
+                    </div>
+                `;
+              })
+              .join("");
+
+            dogsHTML += `
+                <div class="dog-column">
+                    <h4>${size} (${dogs.length} כלבים)</h4>
+                    <div>${dogEntries}</div>
+                </div>
+            `;
+          });
+        }
+
+        dogsView.innerHTML = dogsHTML;
+      }
+
       function changeMonth(delta) {
+        if (window.currentView !== "calendar") return;
+
         window.currentCalendarDate.setMonth(
           window.currentCalendarDate.getMonth() + delta
         );
@@ -1237,11 +1341,14 @@
         }
       }
 
-      // --- לוגיקת כיווץ/פתיחה ---
-      function toggleCalendar(button) {
-        const container = document.getElementById("monthlyCalendarContainer");
-        const body = document.getElementById("calendarBody");
-        const isCollapsed = container.classList.toggle("collapsed");
+      // --- לוגיקת כיווץ/פתיחה של לוח השנה ---
+      function toggleCalendarCollapse(button) {
+        const viewContent = document.getElementById("calendarViewContent");
+
+        // לוודא שאנחנו רק כופלים/פותחים כשמציגים את לוח השנה
+        if (window.currentView === "dogs") return;
+
+        const isCollapsed = viewContent.classList.toggle("collapsed");
 
         if (isCollapsed) {
           button.innerHTML = "פתח ⬇️";
@@ -1249,7 +1356,45 @@
           button.innerHTML = "כווץ ⬆️";
         }
       }
-      // --- סוף לוגיקת לוח שנה חדשה ---
+      // --- סוף לוגיקת כיווץ/פתיחה ---
+
+      // --- לוגיקת החלפת תצוגה ---
+      function toggleCalendarView(button) {
+        const calendarView = document.getElementById("calendarViewContent");
+        const dogsView = document.getElementById("currentDogsColumnView");
+        const title = document.getElementById("viewTitle");
+        const collapseBtn = document.getElementById(
+          "toggleCalendarCollapseBtn"
+        );
+
+        if (window.currentView === "calendar") {
+          // Switch to Dogs view
+          calendarView.style.display = "none";
+          dogsView.style.display = "flex";
+          title.textContent = "כלבים בפנסיון היום";
+          button.textContent = "הצג לוח שנה 🗓️";
+          collapseBtn.style.display = "none"; // Hide collapse button
+          window.currentView = "dogs";
+          renderCurrentDogsColumnView(window.allOrdersCache);
+        } else {
+          // Switch to Calendar view
+          dogsView.style.display = "none";
+          calendarView.style.display = "block";
+          title.textContent = "לוח זמנים חודשי (נוכחות כלבים)";
+          button.textContent = "הצג כלבים נוכחיים 🐕";
+          collapseBtn.style.display = "block"; // Show collapse button
+          window.currentView = "calendar";
+          renderMonthlyCalendar(window.allOrdersCache);
+
+          // Restore collapse button text based on current state
+          if (calendarView.classList.contains("collapsed")) {
+            collapseBtn.innerHTML = "פתח ⬇️";
+          } else {
+            collapseBtn.innerHTML = "כווץ ⬆️";
+          }
+        }
+      }
+      // --- סוף לוגיקת החלפת תצוגה ---
 
       function updatePriceWithButtons(input, delta) {
         const currentValue = parseInt(input.value) || 0;
@@ -1483,12 +1628,16 @@
 
           console.log("Data loaded:", data.length, "rows");
 
-          // שמירת הנתונים במטמון לשימוש לוח השנה
+          // שמירת הנתונים במטמון לשימוש לוח השנה והתצוגות
           window.allOrdersCache = data;
 
-          // --- קריאה לרינדור לוח השנה ---
-          renderMonthlyCalendar(data);
-          // -----------------------------
+          // --- קריאה לרינדור לפי התצוגה הנוכחית ---
+          if (window.currentView === "calendar") {
+            renderMonthlyCalendar(data);
+          } else {
+            renderCurrentDogsColumnView(data);
+          }
+          // ------------------------------------------
 
           if (data.length > 0) {
             console.log("Sample data:", {
@@ -1655,8 +1804,6 @@
             return checkOut < now;
           });
           renderPastOrdersTable();
-
-          // **הקוד להצגת הכלבים הנוכחיים בפנסיון הוסר מכאן**
 
           document
             .querySelectorAll("textarea.admin-note")
