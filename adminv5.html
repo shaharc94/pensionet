@@ -194,7 +194,7 @@
 
       /* --- CSS ללוח השנה החדש --- */
       #monthlyCalendarContainer {
-        overflow-x: hidden;
+        /* הוסרה ההגבלה של overflow-x: hidden; כדי לאפשר ל-tooltip לגלוש החוצה */
       }
 
       .calendar-toggle-btn {
@@ -224,17 +224,18 @@
       }
 
       .calendar-table {
-        width: 100%;
+        width: 100%; /* הוחזר ל-100% לפי בקשה */
         border-collapse: collapse;
         table-layout: fixed;
+        /* margin: 0 auto; הוסר */
       }
 
       .calendar-table th {
-        background: #764ba2;
+        /* background: #764ba2; - הוסר כדי לרשת את הגרדיאנט הכללי */
         color: white;
         font-size: 16px;
-        padding: 15px 5px;
-        border: 1px solid #764ba2;
+        padding: 15px 5px; /* שמירה על הריפוד של לוח השנה */
+        border: 1px solid #e0e0e0; /* הותאם לגבול הכללי */
       }
 
       .calendar-table td {
@@ -243,12 +244,12 @@
         vertical-align: top;
         padding: 5px;
         position: relative;
-        background-color: #fcfcff;
+        /* background-color: #fcfcff; - הוסר כדי לאפשר לעיצוב השורות הכללי (פסים) לחול */
         transition: background-color 0.2s;
       }
 
       .calendar-table td:hover {
-        background-color: #f0f2ff;
+        background-color: #f8f9ff; /* הותאם לצבע ה-hover של שורות הטבלה הכללי */
       }
 
       .calendar-table td.today {
@@ -1171,6 +1172,7 @@
 
         let dayCounter = 1;
         let currentDayOfWeek = firstDayIndex;
+        let rowCounter = 0;
 
         while (dayCounter <= lastDayOfMonth.getDate()) {
           const currentDate = new Date(
@@ -1195,8 +1197,11 @@
               .map((d) => d.dog_name || "ללא שם")
               .join(" | ");
 
+            // בודק אם זה יום שבת (עמודה אחרונה, יום 6) כדי להפוך את כיוון ה-tooltip
+            const reverseClass = currentDayOfWeek === 6 ? " reverse-tooltip" : "";
+
             dogsContentHTML += `
-                    <div class="dog-size-label" >
+                    <div class="dog-size-label${reverseClass}" >
                         ${size} (${dogCount})
                         <div class="dog-tooltip">${dogNames.replace(
                           / \| /g,
@@ -1211,6 +1216,14 @@
             classes += " busy";
           }
 
+          // Apply row striping classes to TD if we are using general TR styles
+          if (rowCounter % 2 === 1) { // Check if the row counter is odd (meaning the row started from an even/striped TR)
+            // This is a complex logic because the first week might not start on Sunday.
+            // However, the CSS rule is for `tbody tr:nth-child(even)`, which means the <tr> index determines the stripe.
+            // The best way to achieve consistency is by relying on the inherited TR styles. No need to add TD classes here.
+          }
+
+
           calendarHTML += `<td class="${classes}">
                 <div class="day-number">${dayCounter}</div>
                 <div class="day-content">${dogsContentHTML}</div>
@@ -1221,6 +1234,7 @@
           if (currentDayOfWeek > 6) {
             calendarHTML += "</tr><tr>";
             currentDayOfWeek = 0;
+            rowCounter++;
           }
 
           dayCounter++;
